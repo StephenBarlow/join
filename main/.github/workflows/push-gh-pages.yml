@@ -1,0 +1,32 @@
+name: Push Pages
+on: [push]
+jobs:
+  push-page:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.1
+        with:
+          persist-credentials: true
+
+      - name: Deploy 🚀
+        run: |
+          git config --global user.email "spec-robot@apollographql.com"
+          git config --global user.name "Spec Robot"
+          git fetch origin gh-pages || true
+          git checkout gh-pages || git checkout -b gh-pages
+          
+          branch=$(basename ${{ github.ref }})
+          rm -rf $branch
+          git clone . --branch $branch --single-branch $branch
+          
+          # Retain git metadata but hide it from git
+          mv $branch/.git $branch/_git
+          
+          # Page build timestamp
+          date > $branch/__timestamp__
+
+          # Push it all
+          git add .
+          git commit -m "Updated $branch"
+          git push origin gh-pages
