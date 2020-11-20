@@ -1,0 +1,11 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "origin"]
+	url = /home/runner/work/csdl/csdl/.
+	fetch = +refs/heads/qv/csdl-draft:refs/remotes/origin/qv/csdl-draft
+[branch "qv/csdl-draft"]
+	remote = origin
+	merge = refs/heads/qv/csdl-draft
