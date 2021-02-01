@@ -4,7 +4,7 @@
 	bare = false
 	logallrefupdates = true
 [remote "origin"]
-	url = /home/runner/work/csdl/csdl/.
+	url = /home/runner/work/join/join/.
 	fetch = +refs/heads/draft/pre-0:refs/remotes/origin/draft/pre-0
 [branch "draft/pre-0"]
 	remote = origin
