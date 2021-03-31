@@ -1046,14 +1046,13 @@ pre[class*="language-"] {
 <header>
 <h1>Join</h1>
 <section id="intro">
-<p><h2>for defining <em>supergraphs</em> which join multiple <em>subgraphs</em></h2> </p>
+<p><h2>for defining <em>supergraphs</em> which join multiple <em>subgraphs</em></h2></p>
 <table class=spec-data>
   <tr><td>Status</td><td>Draft</td>
   <tr><td>Version</td><td>0.1</td>
 </table>
-<link rel=stylesheet href=/apollo-dark.css>
-<link rel=stylesheet href=/tron.css>
-<script type=module async defer src=/install-nav.js></script>
+<link rel=stylesheet href=/apollo-light.css>
+<script type=module async defer src=/inject-logo.js></script>
 <figure id="fig-Schema-joining-multiple-subgraphs"><figcaption><a href="#fig-Schema-joining-multiple-subgraphs"> Schema joining multiple subgraphs</a></figcaption><div class=mermaid>graph LR
   s1(auth.graphql)-->core(join schema: photos.graphql)
   s2(images.graphql)-->core
@@ -1267,7 +1266,7 @@ pre[class*="language-"] {
     subgraph A [subgraph A]
       schemaA([schema A])
       endpointA([endpoint A])
-    end    
+    end
     subgraph B [subgraph B]
       schemaB([schema B])
       endpointB([endpoint B])
@@ -1282,7 +1281,7 @@ pre[class*="language-"] {
     joinSchema([Join Schema])
     subgraph "Consumer ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
       Router
-    end    
+    end
     A-->Composer
     B-->Composer
     C-->Composer
@@ -1373,7 +1372,7 @@ pre[class*="language-"] {
 </code></pre>
 </figure><p>Object types with keys <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">MUST</a> be owned by a subgraph. The owning subgraph:</p>
 <ul>
-<li><a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">MUST</a> be able to resolve all of the object&rsquo;s keys for any subgraph </li>
+<li><a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">MUST</a> be able to resolve all of the object&rsquo;s keys for any subgraph</li>
 <li><a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">MUST</a> be able to resolve all fields referenced via <a href="@join__field/requires">requires</a></li>
 </ul>
 <div id="note-c7f79" class="spec-note">
@@ -1447,7 +1446,7 @@ Type ownership is currently slated for removal in a future version of this spec.
 <p>A <em>realized selection set</em> is a selection within an inbound query, with particular type bounds, which will be issued against a particular subgraph. We denote the realized type of this selection set as <code>subgraph::(Type Bounds)</code>. Within this section, we use the special subgraph name <code>self</code> to refer to the exported composed schema.</p>
 <p>Within a realized selection set, the router can only query fields known to the realized subgraph and valid within the type bounds. As usual with GraphQL execution, a selection on more specific bounds can be acquired by emitting an inline fragment (<code>...on Subtype</code>). Porting to a different subgraph&mdash;to acquire bounds specific to that subgraph, including fields bound to that subgraph&mdash;requires a <a href="#portal-query">portal query</a>.</p>
 <figure id="example-Query-with-resolvers-and-realized-selection-sets" class="spec-example"><figcaption><a href="#example-Query-with-resolvers-and-realized-selection-sets"><span class="spec-example-num">Example № 11</span> Query with resolvers and realized selection sets</a></figcaption><pre class="graphql" data-language="graphql"><code>               <span class="token comment"># resolver              | realizes</span>
-               <span class="token comment"># ---------------------------------------               </span>
+               <span class="token comment"># ---------------------------------------</span>
 <span class="token keyword">query</span> <span class="token punctuation">{</span>        <span class="token comment"># (root)                -> self::Query</span>
     albums <span class="token punctuation">{</span>   <span class="token comment"># albums::Query.albums  -> albums::Album</span>
       user <span class="token punctuation">{</span>   <span class="token comment"># albums::Album.user    -> albums::User</span>
