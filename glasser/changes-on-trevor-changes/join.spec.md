@@ -308,7 +308,7 @@ query ($r: [_Any!]!) { _entities(representations: $r]) { y z } }
 query ($r: [_Any!]!) { _entities(representations: $r]) { c } }
 ```
 
-Note that we only need to do this two-jump process because the fields needed for C's key are not available in B; otherwise a single jump would have worked, like in the owned-field case.
+We only need to do this two-jump process because the fields needed for C's key are not available in B; otherwise a single jump would have worked, like in the owned-field case.
 
 Sometimes a particular extension field needs its parent object's representation to contain more information than its parent type's key requests. In this case, you can include a `requires` argument in the field's `@join__field` listing those required fields (potentially including sub-selections). **All required fields must be resolvable in the owning subgraph** (this restriction is why `requires` is only allowed on extension fields).
 
