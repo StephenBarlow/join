@@ -1059,12 +1059,13 @@ pre[class*="language-"] {
   s2(images.graphql)-->core
   s3(albums.graphql)-->core
   style core fill:none,stroke:fuchsia,color:fuchsia;
-</div></figure><p>This document defines schema elements for describing <a href="/core/v0.1">core schemas</a> which <strong>join</strong> multiple <strong>subgraph</strong> schemas into a single <strong>supergraph</strong> schema.</p>
+</div></figure><p>This document defines a <a href="https://specs.apollo.dev/core/v0.1">core feature</a> named <code>join</code> for describing <a href="https://specs.apollo.dev/core/v0.1">core schemas</a> which <strong>join</strong> multiple <strong>subgraph</strong> schemas into a single <strong>supergraph</strong> schema.</p>
 <p>This specification provides machinery to:</p>
 <ul>
 <li>define <a href="#def-subgraph">subgraphs</a> with the <var data-name="join__Graph">join__Graph</var> enum and the <var data-name="@join__graph">@join__graph</var> directive</li>
 <li>assign fields to subgraphs with <var data-name="@join__field">@join__field</var></li>
 <li>declare additional data required and provided by subgraph field resolvers with the <a href="#@join__field/requires"><code>requires</code></a> and <a href="#@join__field/provides"><code>provides</code></a> arguments</li>
+<li>assign keys and ownership to types with <var data-name="@join__type">@join__type</var> and <var data-name="@join__owner">@join__owner</var></li>
 </ul>
 </section>
 <nav class="spec-toc">
@@ -1097,20 +1098,15 @@ pre[class*="language-"] {
 <li><a href="#@join__field"><span class="spec-secid">7.4</span>@join__field</a></li>
 </ol>
 </li>
-<li><a href="#sec-Validations"><span class="spec-secid">8</span>Validations</a><ol>
-<li><a href="#sec-All-Fields-Resolve"><span class="spec-secid">8.1</span>All Fields Resolve</a></li>
-</ol>
-</li>
-<li><a href="#sec-Appendix-Suggested-Composition-Algorithm"><span class="spec-secid">9</span>Appendix: Suggested Composition Algorithm</a></li>
 </ol>
 </nav>
 </header>
 <section id="sec-How-to-read-this-document" secid="1">
 <h1><span class="spec-secid" title="link to this section"><a href="#sec-How-to-read-this-document">1</a></span>How to read this document</h1>
-<p>This document uses <a href="https://www.ietf.org/rfc/rfc2119.txt">RFC 2119</a> guidance regarding normative terms: <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">MUST</a> / <a href="https://tools.ietf.org/html/rfc2119#section-2" class="spec-requirement not required">MUST NOT</a> / <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">REQUIRED</a> / <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">SHALL</a> / <a href="https://tools.ietf.org/html/rfc2119#section-2" class="spec-requirement not required">SHALL NOT</a> / <a href="https://tools.ietf.org/html/rfc2119#section-3" class="spec-requirement recommended">SHOULD</a> / <a href="https://tools.ietf.org/html/rfc2119#section-4" class="spec-requirement not recommended">SHOULD NOT</a> / <a href="https://tools.ietf.org/html/rfc2119#section-3" class="spec-requirement recommended">RECOMMENDED</a> / <a href="https://tools.ietf.org/html/rfc2119#section-5" class="spec-requirement optional">MAY</a> / <a href="https://tools.ietf.org/html/rfc2119#section-5" class="spec-requirement optional">OPTIONAL</a></p>
+<p>This document uses <a href="https://www.ietf.org/rfc/rfc2119.txt">RFC 2119</a> guidance regarding normative terms: <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">MUST</a> / <a href="https://tools.ietf.org/html/rfc2119#section-2" class="spec-requirement not required">MUST NOT</a> / <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">REQUIRED</a> / <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">SHALL</a> / <a href="https://tools.ietf.org/html/rfc2119#section-2" class="spec-requirement not required">SHALL NOT</a> / <a href="https://tools.ietf.org/html/rfc2119#section-3" class="spec-requirement recommended">SHOULD</a> / <a href="https://tools.ietf.org/html/rfc2119#section-4" class="spec-requirement not recommended">SHOULD NOT</a> / <a href="https://tools.ietf.org/html/rfc2119#section-3" class="spec-requirement recommended">RECOMMENDED</a> / <a href="https://tools.ietf.org/html/rfc2119#section-5" class="spec-requirement optional">MAY</a> / <a href="https://tools.ietf.org/html/rfc2119#section-5" class="spec-requirement optional">OPTIONAL</a>.</p>
 <section id="sec-What-this-document-isn-t" secid="1.1">
 <h2><span class="spec-secid" title="link to this section"><a href="#sec-What-this-document-isn-t">1.1</a></span>What this document isn&#x27;t</h2>
-<p>This document specifies only the structure and semantics of supergraphs. It&rsquo;s expected that a supergraph will generally be the output of a compilation process which composes subgraph schemas. The mechanics of that process are not specified normatively here; a suggestion is provided in <a href="#sec-Appendix-Suggested-Composition-Algorithm">Appendix: Basic Composition Algorithm</a>. Conforming implementations may choose any approach they like, so long as the result conforms to the requirements of this document.</p>
+<p>This document specifies only the structure and semantics of supergraphs. It&rsquo;s expected that a supergraph will generally be the output of a compilation process which composes subgraph schemas. The mechanics of that process are not specified normatively here. Conforming implementations may choose any approach they like, so long as the result conforms to the requirements of this document.</p>
 </section>
 </section>
 <section id="sec-Example-Photo-Library" secid="2">
@@ -1131,9 +1127,8 @@ pre[class*="language-"] {
 
 <span class="token keyword">directive</span> <span class="token directive function">@join__type</span><span class="token punctuation">(</span>
   <span class="token attr-name">graph</span><span class="token punctuation">:</span> join__Graph<span class="token operator">!</span>
-  <span class="token attr-name">requires</span><span class="token punctuation">:</span> core__FieldSet
-  <span class="token attr-name">provides</span><span class="token punctuation">:</span> core__FieldSet
-<span class="token punctuation">)</span> <span class="token keyword">on</span> <span class="token class-name">OBJECT</span> <span class="token operator">|</span> <span class="token constant">INTERFACE</span>
+  <span class="token attr-name">key</span><span class="token punctuation">:</span> String
+<span class="token punctuation">)</span> <span class="token keyword">repeatable</span> <span class="token keyword">on</span> <span class="token class-name">OBJECT</span> <span class="token operator">|</span> <span class="token constant">INTERFACE</span>
 
 <span class="token keyword">directive</span> <span class="token directive function">@join__field</span><span class="token punctuation">(</span>
   <span class="token attr-name">graph</span><span class="token punctuation">:</span> join__Graph
@@ -1472,7 +1467,7 @@ that we only need to do this two&#8208;jump process because the fields needed fo
 </section>
 <section id="sec-Basic-Requirements" secid="5">
 <h1><span class="spec-secid" title="link to this section"><a href="#sec-Basic-Requirements">5</a></span>Basic Requirements</h1>
-<p>Schemas using <var data-name="@join">@join</var> <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">MUST</a> be valid <a href="/core/v0.1">core schema documents</a> with <var data-name="@core">@core</var> directives referencing this specification.</p>
+<p>Schemas using the <code>join</code> core feature <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">MUST</a> be valid <a href="https://specs.apollo.dev/core/v0.1">core schema documents</a> with <var data-name="@core">@core</var> directives referencing the <code>core</code> specification and this specification.</p>
 <figure id="example-@core-directives-for-supergraphs" class="spec-example"><figcaption><a href="#example-@core-directives-for-supergraphs"><span class="spec-example-num">Example № 12</span> <var data-name="@core">@core</var> directives for supergraphs</a></figcaption><pre class="graphql" data-language="graphql"><code><span class="token keyword">schema</span>
   <span class="token directive function">@core</span><span class="token punctuation">(</span><span class="token attr-name">feature</span><span class="token punctuation">:</span> <span class="token string">"https://specs.apollo.dev/core/v1.0"</span><span class="token punctuation">)</span>
   <span class="token directive function">@core</span><span class="token punctuation">(</span><span class="token attr-name">feature</span><span class="token punctuation">:</span> <span class="token string">"https://specs.apollo.dev/join/v1.0"</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -1492,7 +1487,7 @@ that we only need to do this two&#8208;jump process because the fields needed fo
   <span class="token constant">ALBUMS</span> <span class="token directive function">@join__graph</span><span class="token punctuation">(</span><span class="token attr-name">name</span><span class="token punctuation">:</span> <span class="token string">"albums"</span><span class="token punctuation">,</span> <span class="token attr-name">url</span><span class="token punctuation">:</span> <span class="token string">"https://albums.api.com"</span><span class="token punctuation">)</span>
   <span class="token constant">IMAGES</span> <span class="token directive function">@join__graph</span><span class="token punctuation">(</span><span class="token attr-name">name</span><span class="token punctuation">:</span> <span class="token string">"images"</span><span class="token punctuation">,</span> <span class="token attr-name">url</span><span class="token punctuation">:</span> <span class="token string">"https://images.api.com"</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span></code></pre>
-</figure><p>The <var data-name="join__Graph">join__Graph</var> enum is used as input to <var data-name="@join">@join</var> directives which link fields and types to subgraphs.</p>
+</figure><p>The <var data-name="join__Graph">join__Graph</var> enum is used as input to the <a href="#@join__owner"><var data-name="@join__owner">@join__owner</var></a>, <a href="#@join__field"><var data-name="@join__field">@join__field</var></a>, and <a href="#@join__type"><var data-name="@join__type">@join__type</var></a> directives.</p>
 </section>
 </section>
 <section id="sec-Directives" secid="7">
@@ -1525,7 +1520,7 @@ that we only need to do this two&#8208;jump process because the fields needed fo
   <span class="token attr-name">type</span><span class="token punctuation">:</span> MimeType <span class="token directive function">@join__field</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> <span class="token constant">IMAGES</span><span class="token punctuation">)</span>
   <span class="token attr-name">albums</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>Album<span class="token operator">!</span><span class="token punctuation">]</span> <span class="token directive function">@join__field</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> <span class="token constant">ALBUMS</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span></code></pre>
-</figure><p>Multiple <var data-name="@join">@join</var>s can be specified for different subgraphs. It is an error to <var data-name="@join">@join</var> an object against the same subgraph multiple times.</p>
+</figure><p>Multiple <var data-name="@join__type">@join__type</var>s can be specified for different subgraphs. It is an error to <var data-name="@join__type">@join__type</var> an object against the same subgraph multiple times.</p>
 </section>
 <section id="@join__owner" secid="7.3">
 <h2 class="spec-definition-head"><span class="spec-secid" title="link to this section"><a href="#@join__owner">7.3</a></span>@join__owner</h2>
@@ -1550,8 +1545,8 @@ Type ownership is currently slated for removal in a future version of this spec.
   <span class="token attr-name">provides</span><span class="token punctuation">:</span> String<span class="token operator">!</span>
 <span class="token punctuation">)</span> <span class="token keyword">on</span> <span class="token class-name">FIELD_DEFINITION</span>
 </code></pre>
-</figure><p>The parent type <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">MUST</a> be <var data-name="@join">@join</var>ed with the specified <code>graph:</code>.</p>
-<p>Any field definitions without a <var data-name="@join">@join</var> directive are assumed to be resolvable in any subgraph which <var data-name="@join">@join</var>s the parent type.</p>
+</figure><p>The parent type <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">MUST</a> be <var data-name="@join__type">@join__type</var>ed with the specified <code>graph:</code>, unless it is a root type.</p>
+<p>Any field definitions without a <var data-name="@join__field">@join__field</var> directive are assumed to be resolvable in any subgraph which <var data-name="@join__type">@join__type</var>s the parent type.</p>
 <figure id="example-Using-@join__field-to-join-fields-to-subgraphs" class="spec-example"><figcaption><a href="#example-Using-@join__field-to-join-fields-to-subgraphs"><span class="spec-example-num">Example № 16</span> Using <var data-name="@join__field">@join__field</var> to join fields to subgraphs</a></figcaption><pre class="graphql" data-language="graphql"><code><span class="token keyword">type</span> <span class="token class-name">User</span>
   <span class="token directive function">@join__owner</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> <span class="token constant">AUTH</span><span class="token punctuation">)</span>
   <span class="token directive function">@join__type</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> <span class="token constant">AUTH</span><span class="token punctuation">,</span> <span class="token attr-name">key</span><span class="token punctuation">:</span> <span class="token string">"id"</span><span class="token punctuation">)</span>
@@ -1575,25 +1570,12 @@ Type ownership is currently slated for removal in a future version of this spec.
   <span class="token attr-name">albums</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>Album<span class="token operator">!</span><span class="token punctuation">]</span> <span class="token directive function">@join__field</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> <span class="token constant">ALBUMS</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span></code></pre>
 </figure><p>Fields on root types must always be bound to a subgraph:</p>
-<figure id="example-@join-on-root-fields" class="spec-example"><figcaption><a href="#example-@join-on-root-fields"><span class="spec-example-num">Example № 17</span> <var data-name="@join">@join</var> on root fields</a></figcaption><pre class="graphql" data-language="graphql"><code><span class="token keyword">type</span> <span class="token class-name">Query</span> <span class="token punctuation">{</span>
+<figure id="example-@join__field-on-root-fields" class="spec-example"><figcaption><a href="#example-@join__field-on-root-fields"><span class="spec-example-num">Example № 17</span> <var data-name="@join__field">@join__field</var> on root fields</a></figcaption><pre class="graphql" data-language="graphql"><code><span class="token keyword">type</span> <span class="token class-name">Query</span> <span class="token punctuation">{</span>
   <span class="token attr-name">me</span><span class="token punctuation">:</span> User <span class="token directive function">@join__field</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> <span class="token constant">AUTH</span><span class="token punctuation">)</span>
   <span class="token attr-name">images</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>Image<span class="token punctuation">]</span> <span class="token directive function">@join__field</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> <span class="token constant">IMAGES</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span></code></pre>
 </figure><figure id="example-d699c"><script>line => line.includes("me: User") || line.includes("images: [Image]")</script>
 </figure></section>
-</section>
-<section id="sec-Validations" secid="8">
-<h1><span class="spec-secid" title="link to this section"><a href="#sec-Validations">8</a></span>Validations</h1>
-<section id="sec-All-Fields-Resolve" secid="8.1">
-<h2><span class="spec-secid" title="link to this section"><a href="#sec-All-Fields-Resolve">8.1</a></span>All Fields Resolve</h2>
-<div class="spec-todo">
-This may not be necessary after we re&#8208;introduce type ownership</div>
-</section>
-</section>
-<section id="sec-Appendix-Suggested-Composition-Algorithm" secid="9">
-<h1><span class="spec-secid" title="link to this section"><a href="#sec-Appendix-Suggested-Composition-Algorithm">9</a></span>Appendix: Suggested Composition Algorithm</h1>
-<div class="spec-todo">
-This section may be unnecessary? </div>
 </section>
 </article>
 <footer>
@@ -1637,13 +1619,6 @@ Written in <a href="https://spec-md.com" target="_blank">Spec Markdown</a>.</foo
 <li id="_sidebar_7.4"><a href="#@join__field"><span class="spec-secid">7.4</span>@join__field</a></li>
 </ol>
 </li>
-<li id="_sidebar_8"><a href="#sec-Validations"><span class="spec-secid">8</span>Validations</a>
-<input hidden class="toggle" type="checkbox" id="_toggle_8" /><label for="_toggle_8"></label>
-<ol>
-<li id="_sidebar_8.1"><a href="#sec-All-Fields-Resolve"><span class="spec-secid">8.1</span>All Fields Resolve</a></li>
-</ol>
-</li>
-<li id="_sidebar_9"><a href="#sec-Appendix-Suggested-Composition-Algorithm"><span class="spec-secid">9</span>Appendix: Suggested Composition Algorithm</a></li>
 </ol>
 </div>
 <script>(function(){var e,t=[],n=document.querySelector('label[for="spec-sidebar-toggle"]');function o(e){e.preventDefault()}n.addEventListener("scroll",o),n.addEventListener("touchmove",o);for(var i=document.getElementsByTagName("section"),r=0;r<i.length;r++)i[r].getAttribute("secid")&&t.push(i[r]);var c=window.scrollY,l=!1;function d(n){for(var o,i=n+document.documentElement.clientHeight/4,r=t.length-1;r>=0;r--)if(t[r].offsetTop<i){o=t[r];break}var c=o&&o.getAttribute("secid");c!==e&&(e&&a(e,!1),c&&a(c,!0),e=c)}function a(e,t){document.getElementById("_sidebar_"+e).className=t?"viewing":"";for(var n=e.split(".");n.length;){var o=document.getElementById("_sidebar_toggle_"+n.join("."));o&&(o.checked=t),n.pop()}}window.addEventListener("scroll",(function(e){c=window.scrollY,l||(l=!0,window.requestAnimationFrame((function(){d(c),l=!1})))})),d(window.scrollY);})()</script>
