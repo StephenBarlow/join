@@ -1046,14 +1046,13 @@ pre[class*="language-"] {
 <header>
 <h1>Join</h1>
 <section id="intro">
-<p><h2>for defining <em>supergraphs</em> which join multiple <em>subgraphs</em></h2> </p>
+<p><h2>for defining <em>supergraphs</em> which join multiple <em>subgraphs</em></h2></p>
 <table class=spec-data>
   <tr><td>Status</td><td>Draft</td>
   <tr><td>Version</td><td>0.1</td>
 </table>
-<link rel=stylesheet href=/apollo-dark.css>
-<link rel=stylesheet href=/tron.css>
-<script type=module async defer src=/install-nav.js></script>
+<link rel=stylesheet href=/apollo-light.css>
+<script type=module async defer src=/inject-logo.js></script>
 <figure id="fig-Schema-joining-multiple-subgraphs"><figcaption><a href="#fig-Schema-joining-multiple-subgraphs"> Schema joining multiple subgraphs</a></figcaption><div class=mermaid>graph LR
   s1(auth.graphql)-->core(composed schema: photos.graphql)
   s2(images.graphql)-->core
@@ -1225,7 +1224,7 @@ pre[class*="language-"] {
     subgraph A [subgraph A]
       schemaA([schema A])
       endpointA([endpoint A])
-    end    
+    end
     subgraph B [subgraph B]
       schemaB([schema B])
       endpointB([endpoint B])
@@ -1240,7 +1239,7 @@ pre[class*="language-"] {
     supergraph([Supergraph])
     subgraph "Consumer ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
       Router
-    end    
+    end
     A-->Composer
     B-->Composer
     C-->Composer
