@@ -120,7 +120,7 @@ A supergraph schema describes a GraphQL schema that can be served by a router. T
 
 Each supergraph schema contains a list of the subgraphs. It represents this as an enum called [{join__Graph}](#join__Graph) with an enum value for each subgraph. Each enum value is annotated with a [{@join__graph}](#@join__graph) directive telling the router what endpoint can be used to reach the subgraph and a name for the subgraph that can be used in representations of query plans and diagnostic messages.
 
-To resolve a field, the router needs to know to which subgraphs it can delegate the field's resolution. The most direct way to indicate this in a supergraph schema is by annotating the field with a [{@join__field}](#@join__field) directive specifying which subgraph should be used to resolve that field.  (FIXME there are other ways)
+To resolve a field, the router needs to know to which subgraphs it can delegate the field's resolution. The most direct way to indicate this in a supergraph schema is by annotating the field with a [{@join__field}](#@join__field) directive specifying which subgraph should be used to resolve that field.
 
 In order for the router to send an operation that resolves a given field on a parent object to a subgraph, the operation needs to first resolve the parent object itself. There are several ways to accomplish this, described below. The examples below include abbreviated versions of the supergraph schemas which do not include the `schema` definition, directive definitions, or the `join__Graph` definition. This specification does not require the subgraph queries to be the same as those described in these examples; this is just intended to broadly describe the meanings of the directives.
 
