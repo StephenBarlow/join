@@ -1077,7 +1077,7 @@ pre[class*="language-"] {
 </li>
 <li><a href="#sec-Example-Photo-Library"><span class="spec-secid">2</span>Example: Photo Library</a></li>
 <li><a href="#sec-Actors"><span class="spec-secid">3</span>Actors</a></li>
-<li><a href="#sec-Data-Model"><span class="spec-secid">4</span>Data Model</a><ol>
+<li><a href="#sec-Overview"><span class="spec-secid">4</span>Overview</a><ol>
 <li><a href="#sec-Root-fields"><span class="spec-secid">4.1</span>Root fields</a></li>
 <li><a href="#sec-Fields-on-the-same-subgraph-as-the-parent-operation"><span class="spec-secid">4.2</span>Fields on the same subgraph as the parent operation</a></li>
 <li><a href="#sec-Fields-provided-by-the-parent-field"><span class="spec-secid">4.3</span>Fields provided by the parent field</a></li>
@@ -1261,10 +1261,8 @@ pre[class*="language-"] {
 <p><a name=def-subgraph><strong>Subgraphs</strong></a> are GraphQL schemas which are composed to form a supergraph. Subgraph names and metadata are declared within the special <var data-name="join__Graph">join__Graph</var> enum.</p>
 <p>This spec does not place any requirements on subgraph schemas. Generally, they may be of any shape. In particular, subgraph schemas do not need to be supergraphs themselves or to follow this spec in any way; neither is it an error for them to do so. Composers <a href="https://tools.ietf.org/html/rfc2119#section-5" class="spec-requirement optional">MAY</a> place additional requirements on subgraph schemas to aid in composition; composers <a href="https://tools.ietf.org/html/rfc2119#section-3" class="spec-requirement recommended">SHOULD</a> document any such requirements.</p>
 </section>
-<section id="sec-Data-Model" secid="4">
-<h1><span class="spec-secid" title="link to this section"><a href="#sec-Data-Model">4</a></span>Data Model</h1>
-<div class="spec-todo">
-maybe this should be called something more like &ldquo;Overview&rdquo; or &ldquo;Graph Routing in a Supergraph&rdquo; or something?</div>
+<section id="sec-Overview" secid="4">
+<h1><span class="spec-secid" title="link to this section"><a href="#sec-Overview">4</a></span>Overview</h1>
 <p><em>This section is non&#8208;normative.</em> It describes the motivation behind the directives defined by this specification.</p>
 <p>A supergraph schema describes a GraphQL schema that can be served by a router. The router does not contain logic to resolve any of the schema&rsquo;s fields; instead, the supergraph schema contains directives starting with <var data-name="@join__">@join__</var> that tell the router which subgraph endpoint can resolve each field, as well as other information needed in order to construct subgraph queries.</p>
 <p>The directives described in this specification are designed for a particular query planning algorithm, and so there are some restrictions on how they can be combined that originate from the requirements of this algorithm. For example, this specification describes a concept of <a href="#sec-Owned-fields-on-owned-types">type ownership</a> which exists not because we believe it describes the ideal method of structuring your subgraphs, but because this query planning algorithm depends on type ownership. We hope that future versions of this specification can relax some of these restrictions. </p>
@@ -1622,7 +1620,7 @@ Written in <a href="https://spec-md.com" target="_blank">Spec Markdown</a>.</foo
 </li>
 <li id="_sidebar_2"><a href="#sec-Example-Photo-Library"><span class="spec-secid">2</span>Example: Photo Library</a></li>
 <li id="_sidebar_3"><a href="#sec-Actors"><span class="spec-secid">3</span>Actors</a></li>
-<li id="_sidebar_4"><a href="#sec-Data-Model"><span class="spec-secid">4</span>Data Model</a>
+<li id="_sidebar_4"><a href="#sec-Overview"><span class="spec-secid">4</span>Overview</a>
 <input hidden class="toggle" type="checkbox" id="_toggle_4" /><label for="_toggle_4"></label>
 <ol>
 <li id="_sidebar_4.1"><a href="#sec-Root-fields"><span class="spec-secid">4.1</span>Root fields</a></li>
