@@ -1491,7 +1491,8 @@ maybe this should be called something more like &ldquo;Overview&rdquo; or &ldquo
 
 <span class="token keyword">directive</span> <span class="token directive function">@join__graph</span><span class="token punctuation">(</span><span class="token attr-name">name</span><span class="token punctuation">:</span> String<span class="token operator">!</span><span class="token punctuation">,</span> <span class="token attr-name">url</span><span class="token punctuation">:</span> String<span class="token operator">!</span><span class="token punctuation">)</span> <span class="token keyword">on</span> <span class="token class-name">ENUM_VALUE</span>
 </code></pre>
-</figure><p>As described in the core specification, all of the directives and enums defined by this schema should be removed from the supergraph&rsquo;s API schema. For example, the <var data-name="join__Graph">join__Graph</var> enum should not be visible via introspection.</p>
+</figure><p>Processors <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">MUST</a> validate that the schema contains an enum named <var data-name="join__Graph">join__Graph</var>; see <a href="#join__Graph">its section below</a> for other required properties of this enum.</p>
+<p>As described in the core specification, all of the directives and enums defined by this schema should be removed from the supergraph&rsquo;s API schema. For example, the <var data-name="join__Graph">join__Graph</var> enum should not be visible via introspection.</p>
 <div class="spec-todo">
 define field set somewhere?</div>
 </section>
