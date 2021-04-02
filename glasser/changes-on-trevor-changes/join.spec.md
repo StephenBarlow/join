@@ -269,7 +269,7 @@ query ($r: [_Any!]!) { _entities(representations: $r]) { y } }
 
 ## Extension fields on owned types
 
-The previous section described how to jump from one subgraph to another in order to resolve a field on the subgraph that owns the field's parent type. The situation is a bit more complicated when you want to resolve a field on a subgraph that doesn't own the field's parent type --- what we call an extension field. That's because we no longer have the guarantee that the subgraph you're coming from and the subgraph you're going to share a key in common. In this case, we may need to pass through the owning type.
+The previous section described how to jump from one subgraph to another in order to resolve a field on the subgraph that owns the field's parent type. The situation is a bit more complicated when you want to resolve a field on a subgraph that doesn't own the field's parent type — what we call an extension field. That's because we no longer have the guarantee that the subgraph you're coming from and the subgraph you're going to share a key in common. In this case, we may need to pass through the owning type.
 
 ```graphql example -- Extension fields on owned types
 # Supergraph schema
