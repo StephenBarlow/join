@@ -25,7 +25,7 @@ This document defines a [core feature](https://specs.apollo.dev/core/v0.1) named
 This specification provides machinery to:
 - define [subgraphs](#def-subgraph) with the {join__Graph} enum and the {@join__graph} directive
 - assign fields to subgraphs with {@join__field}
-- declare additional data required and provided by subgraph field resolvers with the [`requires`](#@join__field/requires) and [`provides`](#@join__field/provides) arguments
+- declare additional data required and provided by subgraph field resolvers with the `requires` and `provides` arguments to {@join__field}
 - assign keys and ownership to types with {@join__type} and {@join__owner}
 
 # How to read this document
@@ -48,7 +48,7 @@ The meaning of the `@join__*` directives is explored in the [Directives](#sec-Di
 
 The example represents **one way** to compose three input schemas, based on [federated composition](https://www.apollographql.com/docs/federation/federation-spec/). These schemas are provided for purposes of illustration only. This spec places no normative requirements on composer input. It does not require that subgraphs use federated composition directives, and it does not place any requirements on *how* the composer builds a supergraph, except to say that the resulting schema must be a valid supergraph document.
 
-[auth](./albums.graphql) provides the `User` type and `Query.me`.
+[auth](./auth.graphql) provides the `User` type and `Query.me`.
 
 :::[example](auth.graphql) -- Auth schema
 
@@ -102,7 +102,7 @@ flowchart TB
 
 <a namme=def-router>**Routers**</a> are consumers which serve a composed schema as a GraphQL endpoint. *This definition is non-normative.*
   - Graph routers differ from standard GraphQL endpoints in that they are not expected to resolve fields or communicate with (non-GraphQL) backend services on their own. Instead, graph routers receive GraphQL requests and service them by performing additional GraphQL requests. This spec provides guidance for implementing routers, but does not require particular implementations of query separation or dispatch, nor does it attempt to normatively separate routers from other supergraph consumers.
-  - Routers will often omit schema elements from the schema they present to clients via introspection ({join__Graph}, for example, will typically be omitted)
+  - Routers will often omit schema elements from the API schema that is used to validate client operations and that they present to clients via introspection ({join__Graph}, for example, will typically be omitted)
 
 <a name=def-endpoint>**Endpoints**</a> are running servers which can resolve GraphQL queries against a schema. In this version of the spec, endpoints must be URLs, typically http/https URLs.
 
@@ -353,6 +353,9 @@ Processors MUST validate that you have defined the directives with the same argu
 
 :::[definition](join.spec.graphql)
 
+As described in the core specification, all of the directives and enums defined by this schema should be removed from the supergraph's API schema. For example, the {join__Graph} enum should not be visible via introspection.
+
+TODO define field set somewhere?
 
 # Enums
 
@@ -364,7 +367,7 @@ Enumerate subgraphs.
 enum join__Graph
 ```
 
-Documents MUST define a {join__Graph} enum. Each enum value defines a subgraph.
+Documents MUST define a {join__Graph} enum. Each enum value describes a subgraph. Each enum value MUST have a [{@join__graph}](#@join__graph) directive applied to it.
 
 :::[example](photos.graphql#join__Graph) -- Using join__Graph to define endpoints
 
@@ -382,9 +385,11 @@ directive @join__graph(name: String!, url: String!) on ENUM_VALUE
 
 :::[example](photos.graphql#join__Graph) -- Using {@join__graph} to declare subgraph metadata on the {join__Graph} enum values.
 
+The {@join__graph} directive MUST be applied to each enum value on {join__Graph}, and nowhere else. All applications must provide distinct values for the `name` argument; this name is an arbitrary non-empty string that may be used in representations of query plans and diagnostic messages. The `url` argument is an endpoint that can resolve GraphQL queries for the subgraph.
+
 ##! @join__type
 
-Join a type to a subgraph, optionally providing an entity key.
+Declares an entity key for a type on a subgraph.
 
 ```graphql definition
 directive @join__type(
@@ -393,12 +398,41 @@ directive @join__type(
 ) repeatable on OBJECT | INTERFACE
 ```
 
-// TODO: rename portal query?
-Keys will be passed as `representations` within a [portal query](#portal-query) to [port](#portability) a selection set between subgraphs.
+TODO glasser doesn't understand what this means without a key. The current composer doesn't ever produce null/missing key.
+
+When this directive is placed on a type `T`, it means that subgraph `graph` MUST be able to:
+- Resolve selections on objects of the given type that contain the field set in `key`
+- Use `Query._entities` to resolve representations of objects containing `__typename: "T"` and the fields from the field set in `key`
 
 :::[example](photos.graphql#Image) -- Using {@join__type} to specify subgraph keys
 
-Multiple {@join__type}s can be specified for different subgraphs. It is an error to {@join__type} an object against the same subgraph multiple times.
+Every type with a {@join__type} MUST also have a [{@join__owner}](#@join__owner) directive. Any type with a [{@join__owner}](#@join__owner) directive MUST have at least one {@join__type} directive with the same `graph` as the [{@join__owner}](#@join__owner) directive (the "owning graph"), and MUST have at most one {@join__type} directive for each `graph` value other than the owning graph. Any value that appears as a `key` in a {@join__type} directive with a `graph` value other than the owning graph must also appear as a `key` in a {@join__type} directive with `graph` equal to the owning graph.
+
+##! @join__field
+
+Specify the graph that can resolve the field.
+
+```graphql definition
+directive @join__field(
+  graph: join__Graph!
+  requires: String
+  provides: String
+) on FIELD_DEFINITION
+```
+
+The field's parent type MUST be annotated with a {@join__type} with the same value of `graph` as this directive, unless the parent type is a [root operation type](http://spec.graphql.org/draft/#sec-Root-Operation-Types).
+
+If a field is not annotated with {@join__field} and its parent type is annotated with `@join__owner(graph: G)`, then a processor MUST treat the field as if it is annotated with `@join__field(graph: G)`. If a field is not annotated with {@join__field} and its parent type is not annotated with {@join__owner} (ie, the parent type is a value type) then it MUST be resolvable in any subgraph that can resolve values of its parent type.
+
+:::[example](photos.graphql#User...Image) -- Using {@join__field} to join fields to subgraphs
+
+Every field on a root operation type MUST have be annotated with {@join__field}.
+
+:::[example](photos.graphql#Query) -- {@join__field} on root fields
+
+The `requires` argument MUST only be specified on fields whose parent type has a [{@join__owner}](#@join__owner) directive specifying a different `graph` than this {@join__field} directive does. All fields (including nested fields) mentioned in this field set must be resolvable in the parent type's owning subgraph. When constructing a representation for a parent object of this field, a router will include the fields selected in this `requires` argument in addition to the appropriate `key` for the parent type.
+
+The `provides` argument specifies fields that can be resolved in operations run on subgraph `graph` as a nested selection under this field, even if they ordinarily can only be resolved on other subgraphs.
 
 ##! @join__owner
 
@@ -408,35 +442,6 @@ Specify the graph which owns the object type.
 directive @join__owner(graph: join__Graph!) on OBJECT
 ```
 
-Object types with keys MUST be owned by a subgraph. The owning subgraph:
-  - MUST be able to resolve all of the object's keys for any subgraph 
-  - MUST be able to resolve all fields referenced via [requires](@join__field/requires)
+The descriptions of [{@join__type}](#@join__type) and [{@join__field}](#@join__field) describes requirements on how {@join__owner} relates to {@join__type} and the `requires` argument to {@join__field}.
 
-Note: Type ownership is currently slated for removal in a future version of this spec. It is RECOMMENDED that router implementations consider approaches which function in the absence of these restrictions.
-
-##! @join__field
-
-Join a field with a particular subgraph.
-
-```graphql definition
-directive @join__field(
-  graph: join__Graph
-  requires: String!
-  provides: String!
-) on FIELD_DEFINITION
-```
-
-The parent type MUST be {@join__type}ed with the specified `graph:`, unless it is a root type.
-
-Any field definitions without a {@join__field} directive are assumed to be resolvable in any subgraph which {@join__type}s the parent type.
-
-:::[example](photos.graphql#User...Image) -- Using {@join__field} to join fields to subgraphs
-
-Fields on root types must always be bound to a subgraph:
-
-:::[example](photos.graphql#Query) -- {@join__field} on root fields
-
-```html diagram
-<script>line => line.includes("me: User") || line.includes("images: [Image]")</script>
-```
-
+Note: Type ownership is currently slated for removal in a future version of this spec. It is RECOMMENDED that router implementations consider approaches which function in the absence of these restrictions. The [data model](#sec-Owned-fields-on-owned-types) explains how the current router's query planning algorithm depends on concept of type ownership.
