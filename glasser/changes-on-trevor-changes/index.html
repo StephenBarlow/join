@@ -1125,7 +1125,7 @@ pre[class*="language-"] {
 
 <span class="token keyword">directive</span> <span class="token directive function">@join__type</span><span class="token punctuation">(</span>
   <span class="token attr-name">graph</span><span class="token punctuation">:</span> join__Graph<span class="token operator">!</span>
-  <span class="token attr-name">key</span><span class="token punctuation">:</span> String
+  <span class="token attr-name">key</span><span class="token punctuation">:</span> String<span class="token operator">!</span>
 <span class="token punctuation">)</span> <span class="token keyword">repeatable</span> <span class="token keyword">on</span> <span class="token class-name">OBJECT</span> <span class="token operator">|</span> <span class="token constant">INTERFACE</span>
 
 <span class="token keyword">directive</span> <span class="token directive function">@join__field</span><span class="token punctuation">(</span>
@@ -1479,11 +1479,11 @@ pre[class*="language-"] {
 </figure><p>As described in the <a href="https://specs.apollo.dev/core/v0.1/#sec-Prefixing">core schema specification</a>, your schema may use a prefix other than <code>join</code> for all of the directive and enum names defined by this specification by including an <code>as</code> argument to the <code>@core</code> directive which references this specification. All references to directive and enum names in this specification <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">MUST</a> be interpreted as referring to names with the appropriate prefix chosen within your schema.</p>
 <p>In order to use the directives described by this specification, GraphQL requires you to include their definitions in your schema.</p>
 <p>Processors <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">MUST</a> validate that you have defined the directives with the same arguments, locations, and <code>repeatable</code> flag as given below.</p>
-<figure id="example-4a3d6" class="spec-definition"><pre class="graphql" data-language="graphql"><code><span class="token keyword">directive</span> <span class="token directive function">@join__owner</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> join__Graph<span class="token punctuation">)</span> <span class="token keyword">on</span> <span class="token class-name">OBJECT</span>
+<figure id="example-cb793" class="spec-definition"><pre class="graphql" data-language="graphql"><code><span class="token keyword">directive</span> <span class="token directive function">@join__owner</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> join__Graph<span class="token punctuation">)</span> <span class="token keyword">on</span> <span class="token class-name">OBJECT</span>
 
 <span class="token keyword">directive</span> <span class="token directive function">@join__type</span><span class="token punctuation">(</span>
   <span class="token attr-name">graph</span><span class="token punctuation">:</span> join__Graph<span class="token operator">!</span><span class="token punctuation">,</span>
-  <span class="token attr-name">key</span><span class="token punctuation">:</span> String<span class="token punctuation">,</span>
+  <span class="token attr-name">key</span><span class="token punctuation">:</span> String<span class="token operator">!</span><span class="token punctuation">,</span>
 <span class="token punctuation">)</span> <span class="token keyword">repeatable</span> <span class="token keyword">on</span> <span class="token class-name">OBJECT</span> <span class="token operator">|</span> <span class="token constant">INTERFACE</span>
 
 <span class="token keyword">directive</span> <span class="token directive function">@join__field</span><span class="token punctuation">(</span>
@@ -1532,14 +1532,12 @@ define field set somewhere?</div>
 <section id="@join__type" secid="7.2">
 <h2 class="spec-definition-head"><span class="spec-secid" title="link to this section"><a href="#@join__type">7.2</a></span>@join__type</h2>
 <p>Declares an entity key for a type on a subgraph.</p>
-<figure id="example-44879" class="spec-definition"><pre class="graphql" data-language="graphql"><code><span class="token keyword">directive</span> <span class="token directive function">@join__type</span><span class="token punctuation">(</span>
+<figure id="example-2d2fa" class="spec-definition"><pre class="graphql" data-language="graphql"><code><span class="token keyword">directive</span> <span class="token directive function">@join__type</span><span class="token punctuation">(</span>
   <span class="token attr-name">graph</span><span class="token punctuation">:</span> join__Graph<span class="token operator">!</span>
-  <span class="token attr-name">key</span><span class="token punctuation">:</span> String
+  <span class="token attr-name">key</span><span class="token punctuation">:</span> String<span class="token operator">!</span>
 <span class="token punctuation">)</span> <span class="token keyword">repeatable</span> <span class="token keyword">on</span> <span class="token class-name">OBJECT</span> <span class="token operator">|</span> <span class="token constant">INTERFACE</span>
 </code></pre>
-</figure><div class="spec-todo">
-glasser doesn&rsquo;t understand what this means without a key. The current composer doesn&rsquo;t ever produce null/missing key.</div>
-<p>When this directive is placed on a type <code>T</code>, it means that subgraph <code>graph</code> <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">MUST</a> be able to:</p>
+</figure><p>When this directive is placed on a type <code>T</code>, it means that subgraph <code>graph</code> <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">MUST</a> be able to:</p>
 <ul>
 <li>Resolve selections on objects of the given type that contain the field set in <code>key</code></li>
 <li>Use <code>Query._entities</code> to resolve representations of objects containing <code>__typename: &quot;T&quot;</code> and the fields from the field set in <code>key</code></li>
