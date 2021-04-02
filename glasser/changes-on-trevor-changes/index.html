@@ -1322,16 +1322,16 @@ pre[class*="language-"] {
   <span class="token attr-name">priceCents</span><span class="token punctuation">:</span> Int<span class="token operator">!</span> <span class="token directive function">@join__field</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> <span class="token constant">PRODUCTS</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
-<span class="token comment"># Operation</span>
+<span class="token comment"># Operation showing that `priceCents` is typically resolved on PRODUCTS</span>
 <span class="token punctuation">{</span> randomProduct <span class="token punctuation">{</span> priceCents <span class="token punctuation">}</span> <span class="token punctuation">}</span>
 <span class="token comment"># Generated subgraph operations</span>
-<span class="token comment">## On B</span>
+<span class="token comment">## On PRODUCTS</span>
 <span class="token punctuation">{</span> randomProduct <span class="token punctuation">{</span> priceCents <span class="token punctuation">}</span> <span class="token punctuation">}</span>
 
-<span class="token comment"># Operation</span>
+<span class="token comment"># Operation showing that `provides` allows `priceCents` to be resolved on MARKETING</span>
 <span class="token punctuation">{</span> todaysPromotion <span class="token punctuation">{</span> priceCents <span class="token punctuation">}</span> <span class="token punctuation">}</span>
 <span class="token comment"># Generated subgraph operations</span>
-<span class="token comment">## On A</span>
+<span class="token comment">## On MARKETING</span>
 <span class="token punctuation">{</span> todaysPromotion <span class="token punctuation">{</span> priceCents <span class="token punctuation">}</span> <span class="token punctuation">}</span>
 </code></pre>
 </figure></section>
