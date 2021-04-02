@@ -426,7 +426,7 @@ If a field is not annotated with {@join__field} and its parent type is annotated
 
 :::[example](photos.graphql#User...Image) -- Using {@join__field} to join fields to subgraphs
 
-Every field on a root operation type MUST have be annotated with {@join__field}.
+Every field on a root operation type MUST be annotated with {@join__field}.
 
 :::[example](photos.graphql#Query) -- {@join__field} on root fields
 
