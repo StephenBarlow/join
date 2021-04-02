@@ -1384,8 +1384,8 @@ pre[class*="language-"] {
     <span class="token directive function">@join__type</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> <span class="token constant">B</span><span class="token punctuation">,</span> <span class="token attr-name">key</span><span class="token punctuation">:</span> <span class="token string">"x"</span><span class="token punctuation">)</span>
     <span class="token directive function">@join__type</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> <span class="token constant">C</span><span class="token punctuation">,</span> <span class="token attr-name">key</span><span class="token punctuation">:</span> <span class="token string">"y z"</span><span class="token punctuation">)</span>
   <span class="token punctuation">{</span>
-  <span class="token comment"># Because B owns X, we can omit @join__field(graph: B)</span>
-  <span class="token comment"># from these two fields.</span>
+  <span class="token comment"># Because A owns X, we can omit @join__field(graph: A)</span>
+  <span class="token comment"># from these three fields.</span>
   <span class="token attr-name">x</span><span class="token punctuation">:</span> String
   <span class="token attr-name">y</span><span class="token punctuation">:</span> String
   <span class="token attr-name">z</span><span class="token punctuation">:</span> String
