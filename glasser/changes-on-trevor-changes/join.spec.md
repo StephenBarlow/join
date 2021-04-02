@@ -139,9 +139,9 @@ type Query {
 { fieldA fieldB }
 # Generated subgraph operations
 ## On A:
- { fieldA }
+{ fieldA }
 ## On B:
- { fieldB }
+{ fieldB }
 ```
 
 
@@ -163,7 +163,7 @@ type X @join__owner(graph: A) {
 { fieldA { nestedFieldA } }
 # Generated subgraph operations
 ## On A:
- { fieldA { nestedFieldA }}
+{ fieldA { nestedFieldA }}
 ```
 
 ## Fields provided by the parent field
