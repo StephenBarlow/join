@@ -1119,8 +1119,6 @@ pre[class*="language-"] {
   <span class="token attr-name">query</span><span class="token punctuation">:</span> Query
 <span class="token punctuation">}</span>
 
-<span class="token keyword">scalar</span> <span class="token class-name">core__FieldSet</span>
-
 <span class="token keyword">directive</span> <span class="token directive function">@core</span><span class="token punctuation">(</span><span class="token attr-name">feature</span><span class="token punctuation">:</span> String<span class="token operator">!</span><span class="token punctuation">)</span> <span class="token keyword">repeatable</span> <span class="token keyword">on</span> <span class="token class-name">SCHEMA</span>
 
 <span class="token keyword">directive</span> <span class="token directive function">@join__owner</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> join__Graph<span class="token operator">!</span><span class="token punctuation">)</span> <span class="token keyword">on</span> <span class="token class-name">OBJECT</span>
@@ -1132,8 +1130,8 @@ pre[class*="language-"] {
 
 <span class="token keyword">directive</span> <span class="token directive function">@join__field</span><span class="token punctuation">(</span>
   <span class="token attr-name">graph</span><span class="token punctuation">:</span> join__Graph
-  <span class="token attr-name">requires</span><span class="token punctuation">:</span> core__FieldSet
-  <span class="token attr-name">provides</span><span class="token punctuation">:</span> core__FieldSet
+  <span class="token attr-name">requires</span><span class="token punctuation">:</span> String
+  <span class="token attr-name">provides</span><span class="token punctuation">:</span> String
 <span class="token punctuation">)</span> <span class="token keyword">on</span> <span class="token class-name">FIELD_DEFINITION</span>
 
 <span class="token keyword">directive</span> <span class="token directive function">@join__graph</span><span class="token punctuation">(</span><span class="token attr-name">name</span><span class="token punctuation">:</span> String<span class="token operator">!</span><span class="token punctuation">,</span> <span class="token attr-name">url</span><span class="token punctuation">:</span> String<span class="token operator">!</span><span class="token punctuation">)</span> <span class="token keyword">on</span> <span class="token class-name">ENUM_VALUE</span>
@@ -1158,7 +1156,7 @@ pre[class*="language-"] {
   <span class="token attr-name">albums</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>Album<span class="token operator">!</span><span class="token punctuation">]</span> <span class="token directive function">@join__field</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> <span class="token constant">ALBUMS</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
-<span class="token keyword">type</span> <span class="token class-name">Album</span> <span class="token directive function">@join</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> <span class="token constant">ALBUMS</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<span class="token keyword">type</span> <span class="token class-name">Album</span> <span class="token directive function">@join__owner</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> <span class="token constant">ALBUMS</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token attr-name">user</span><span class="token punctuation">:</span> User
   <span class="token attr-name">photos</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>Image<span class="token operator">!</span><span class="token punctuation">]</span>
 <span class="token punctuation">}</span>
@@ -1473,6 +1471,24 @@ that we only need to do this two&#8208;jump process because the fields needed fo
   <span class="token directive function">@core</span><span class="token punctuation">(</span><span class="token attr-name">feature</span><span class="token punctuation">:</span> <span class="token string">"https://specs.apollo.dev/join/v1.0"</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token attr-name">query</span><span class="token punctuation">:</span> Query
 <span class="token punctuation">}</span></code></pre>
+</figure><p>As described in the <a href="https://specs.apollo.dev/core/v0.1/#sec-Prefixing">core schema specification</a>, your schema may use a prefix other than <code>join</code> for all of the directive and enum names defined by this specification by including an <code>as</code> argument to the <code>@core</code> directive which references this specification. All references to directive and enum names in this specification <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">MUST</a> be interpreted as referring to names with the appropriate prefix chosen within your schema.</p>
+<p>In order to use the directives described by this specification, GraphQL requires you to include their definitions in your schema.</p>
+<p>Processors <a href="https://tools.ietf.org/html/rfc2119#section-1" class="spec-requirement required">MUST</a> validate that you have defined the directives with the same arguments, locations, and <code>repeatable</code> flag as given below.</p>
+<figure id="example-4a3d6" class="spec-definition"><pre class="graphql" data-language="graphql"><code><span class="token keyword">directive</span> <span class="token directive function">@join__owner</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> join__Graph<span class="token punctuation">)</span> <span class="token keyword">on</span> <span class="token class-name">OBJECT</span>
+
+<span class="token keyword">directive</span> <span class="token directive function">@join__type</span><span class="token punctuation">(</span>
+  <span class="token attr-name">graph</span><span class="token punctuation">:</span> join__Graph<span class="token operator">!</span><span class="token punctuation">,</span>
+  <span class="token attr-name">key</span><span class="token punctuation">:</span> String<span class="token punctuation">,</span>
+<span class="token punctuation">)</span> <span class="token keyword">repeatable</span> <span class="token keyword">on</span> <span class="token class-name">OBJECT</span> <span class="token operator">|</span> <span class="token constant">INTERFACE</span>
+
+<span class="token keyword">directive</span> <span class="token directive function">@join__field</span><span class="token punctuation">(</span>
+  <span class="token attr-name">graph</span><span class="token punctuation">:</span> join__Graph<span class="token punctuation">,</span>
+  <span class="token attr-name">requires</span><span class="token punctuation">:</span> String<span class="token punctuation">,</span>
+  <span class="token attr-name">provides</span><span class="token punctuation">:</span> String<span class="token punctuation">,</span>
+<span class="token punctuation">)</span> <span class="token keyword">on</span> <span class="token class-name">FIELD_DEFINITION</span>
+
+<span class="token keyword">directive</span> <span class="token directive function">@join__graph</span><span class="token punctuation">(</span><span class="token attr-name">name</span><span class="token punctuation">:</span> String<span class="token operator">!</span><span class="token punctuation">,</span> <span class="token attr-name">url</span><span class="token punctuation">:</span> String<span class="token operator">!</span><span class="token punctuation">)</span> <span class="token keyword">on</span> <span class="token class-name">ENUM_VALUE</span>
+</code></pre>
 </figure></section>
 <section id="sec-Enums" secid="6">
 <h1><span class="spec-secid" title="link to this section"><a href="#sec-Enums">6</a></span>Enums</h1>
@@ -1556,7 +1572,7 @@ Type ownership is currently slated for removal in a future version of this spec.
   <span class="token attr-name">albums</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>Album<span class="token operator">!</span><span class="token punctuation">]</span> <span class="token directive function">@join__field</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> <span class="token constant">ALBUMS</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
-<span class="token keyword">type</span> <span class="token class-name">Album</span> <span class="token directive function">@join</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> <span class="token constant">ALBUMS</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<span class="token keyword">type</span> <span class="token class-name">Album</span> <span class="token directive function">@join__owner</span><span class="token punctuation">(</span><span class="token attr-name">graph</span><span class="token punctuation">:</span> <span class="token constant">ALBUMS</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token attr-name">user</span><span class="token punctuation">:</span> User
   <span class="token attr-name">photos</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>Image<span class="token operator">!</span><span class="token punctuation">]</span>
 <span class="token punctuation">}</span>
